@@ -48,6 +48,6 @@
       var el = e.target;
       while (el && el !== nav) { if (el.tagName === "A") { setOpen(false); return; } el = el.parentElement; }
     });
-    window.addEventListener("resize", function(){ if (open) setOpen(true); });
+    window.addEventListener("resize", function(){ place(); if (open) setOpen(true); });
   });
 })();
