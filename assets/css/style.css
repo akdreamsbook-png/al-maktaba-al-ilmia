@@ -326,17 +326,31 @@ form.f .half{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .login-box h2{color:var(--navy);margin-top:0}
 .mode-banner{background:#fff8e1;border:1px solid #e6c84a;color:#7a5c00;border-radius:10px;padding:8px 14px;margin:10px 0;font-size:13.5px}
 
+/* الخلفية المعتمة للقائمة الجانبية: معطلة على الحاسوب */
+.nav-backdrop{display:none}
+
 /* ---------- الهاتف ---------- */
 @media(max-width:820px){
   .nav-toggle{display:block}
   nav.main{
-    display:none;width:100%;flex-direction:column;align-items:stretch;
-    background:rgba(0,0,0,.18);border-radius:14px;padding:8px;margin-top:6px;
+    display:none;position:fixed;top:0;inset-inline-start:0;z-index:80;
+    width:min(82vw,320px);height:100vh;height:100dvh;max-height:100dvh;
+    flex-direction:column;align-items:stretch;margin:0;border-radius:0;
+    background:linear-gradient(180deg,var(--navy),var(--navy-2));
+    box-shadow:0 0 50px rgba(0,0,0,.45);
+    padding:16px 12px calc(18px + env(safe-area-inset-bottom));
+    overflow-y:auto;
   }
   nav.main.open{display:flex}
-  nav.main a{padding:11px 14px;font-size:15px}
+  nav.main a{padding:13px 16px;font-size:16px;border-radius:12px}
   nav.main a.active::after{display:none}
-  .admin-link{margin-inline-start:0;text-align:center}
+  .admin-link{margin-inline-start:0;text-align:center;margin-top:10px}
+  .nav-backdrop{
+    display:block;position:fixed;inset:0;z-index:75;background:rgba(9,25,42,.55);
+    opacity:0;pointer-events:none;transition:opacity .2s ease;
+  }
+  .nav-backdrop.on{opacity:1;pointer-events:auto}
+  body.nav-lock{overflow:hidden}
   .hero-inner{grid-template-columns:1fr;padding:36px 0;text-align:center;justify-items:center}
   .hero .lede{margin-inline:auto}
   .cta-row{justify-content:center}
