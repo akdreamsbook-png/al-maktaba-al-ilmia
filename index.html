@@ -178,7 +178,8 @@
     $("f-copy").textContent = "© " + new Date().getFullYear() + " " + I18N.st(s, "site_title");
     if (s.photo) {
       $("photo-slot").innerHTML = '<img src="' + Store.esc(s.photo) + '" alt="صورة الشيخ">';
-      document.querySelector(".photo-cap").textContent = I18N.st(s, "sheikh_name");
+      const pc = document.querySelector(".photo-cap");
+      if (pc) pc.textContent = I18N.st(s, "sheikh_name");
     }
     const sMap = {}; DATA.series.forEach(x => sMap[x.id] = I18N.ct(x));
     const L = DATA.lessons;
