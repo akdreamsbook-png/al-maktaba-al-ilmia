@@ -542,6 +542,44 @@
   tabs.forEach(b => { if (b.dataset.t === "questions") { const old = b.onclick; b.onclick = () => { if (old) old(b); loadQuestions(); }; } });
   window.__qaAfterLogin = loadQuestions;
 
+  /* ================= النشر على الموقع العام ================= */
+  let PUB_T = null;
+  function pubState(t, err){ const el = $("pub-state"); if (el) el.innerHTML = err ? '<span class="error" style="padding:0;background:none;border:0">' + esc(t) + '</span>' : t; }
+  async function pubNow(){
+    try {
+      const r = await Store.api("/api/admin/publish", { method: "POST" });
+      pubState("⏳ " + (r.msg || "بدأ النشر…"));
+      pollPub(0);
+    } catch (e) { pubState("تعذر بدء النشر: " + e.message, true); }
+  }
+  async function pollPub(n){
+    let j;
+    try { j = await Store.api("/api/admin/publish/status"); } catch (e) { return; }
+    if (j.busy) { pubState("⏳ جارٍ النشر إلى GitHub…"); return pollPub(60); }
+    pubState(j.code === 0 ? "✓ نُشِر على الموقع العام — الرابط محدَّث" :
+             j.code == null ? "" : "✗ فشل النشر — راجع التفاصيل في الطرفية", j.code != null && j.code !== 0);
+  }
+  function markDirty(){
+    if (!$("pub-auto") || !$("pub-auto").checked) return;
+    clearTimeout(PUB_T);
+    PUB_T = setTimeout(pubNow, 20000); // نشر تلقائي مهدّأ: بعد الهدوء 20 ثانية من آخر تغيير
+    pubState("⏳ سيَنشر تلقائيًّا بعد 20 ثانية…");
+  }
+  (function wirePub(){
+    const b = $("pub-now-btn"); if (!b) return;
+    b.onclick = pubNow;
+    const ac = $("pub-auto");
+    try { ac.checked = localStorage.getItem("ablib_autopubl") === "1"; } catch(e){}
+    ac.onchange = () => { try { localStorage.setItem("ablib_autopubl", ac.checked ? "1" : "0"); } catch(e){} if (ac.checked) markDirty(); };
+    // كل عملية كتابة إدارية تعطّل مؤشر «متسخ» — نغلف Store.api
+    const rawApi = Store.api.bind(Store);
+    Store.api = (path, opt) => {
+      const m = ((opt || {}).method || "GET").toUpperCase();
+      if (m !== "GET" && /\/api\/admin\//.test(path) && !/publish/.test(path)) markDirty();
+      return rawApi(path, opt);
+    };
+  })();
+
   // بدء
   (async () => {
     await refresh();
