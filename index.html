@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المكتبة العلمية لفضيلة الشيخ أبي أنس محمد مصطفى صار</title>
+<meta name="description" content="المكتبة العلمية لفضيلة الشيخ أبي أنس محمد مصطفى صار: الدروس العلمية، المحاضرات العامة، الخطب، الكتب والبحوث والملفات.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V4a2 2 0 0 0-2-2H6.5A2.5 2.5 0 0 0 4 4.5v15z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/><path d="M9 7h7M9 11h5"/></svg></span>
+      <span class="t"><b>المكتبة العلمية</b><small id="brand-sheikh">فضيلة الشيخ أبو أنس محمد مصطفى صار</small></span>
+    </a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="القائمة" aria-expanded="false">☰</button>
+    <nav class="main" id="main-nav">
+      <a href="index.html" class="active">الرئيسية</a>
+      <a href="lessons.html">الدروس</a>
+      <a href="series.html">السلاسل العلمية</a>
+      <a href="lessons.html?kind=khotba" data-i18n="nav.khotab"></a>
+      <a href="lessons.html?kind=general" data-i18n="nav.lectures"></a>
+      <a href="books.html">الكتب والملفات</a>
+      
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div>
+        <span class="over-title" data-i18n="home.overTitle"></span>
+        <h1 id="sheikh-name">فضيلة الشيخ أبو أنس محمد مصطفى صار</h1>
+        <p class="tagline" id="tagline">الدروس العلمية • المحاضرات العامة • الخطب • الكتب والبحوث</p>
+        <p class="lede" id="bio"></p>
+        <div class="cta-row">
+          <a class="btn" href="lessons.html" data-i18n="home.ctaLessons"></a>
+          <a class="btn light" href="series.html" data-i18n="home.ctaSeries"></a>
+        </div>
+        <div class="search-hero">
+          <form class="box" action="lessons.html" method="get" id="hero-search" autocomplete="off">
+            <span class="icon" aria-hidden="true">🔍</span>
+            <input type="search" name="q" id="hero-q" data-i18n-ph="home.searchPh" aria-label="بحث">
+            <button class="btn" type="submit" data-i18n="home.searchBtn"></button>
+          </form>
+          <div class="suggest" id="suggest" style="display:none"></div>
+        </div>
+        <div class="hero-stats">
+          <div><b id="st-lessons">0</b><span data-i18n="home.statLessons"></span></div>
+          <div><b id="st-khotab">0</b><span data-i18n="home.statKhotab"></span></div>
+          <div><b id="st-lectures">0</b><span data-i18n="home.statLectures"></span></div>
+          <div><b id="st-series">0</b><span data-i18n="home.statSeries"></span></div>
+          <div><b id="st-books">0</b><span data-i18n="home.statBooks"></span></div>
+        </div>
+      </div>
+      <div class="photo-frame">
+        <div class="photo-ring" id="photo-slot"><div class="photo-ph">ع</div></div>
+        <span class="photo-cap" data-i18n="home.photoCap"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="container"><div id="mode-note"></div></div>
+
+  <section class="block">
+    <div class="container">
+      <div class="sec-head">
+        <div><p class="kick" data-i18n="home.kickLibrary"></p><h2 data-i18n="home.secLatest"></h2></div>
+        <a class="more-link" href="lessons.html" data-i18n="btn.viewAll"></a>
+      </div>
+      <div class="lesson-list" id="latest"></div>
+    </div>
+  </section>
+
+  <section class="block alt">
+    <div class="container">
+      <div class="sec-head">
+        <div><p class="kick" data-i18n="home.kickSystem"></p><h2 data-i18n="home.secSeries"></h2></div>
+        <a class="more-link" href="series.html" data-i18n="btn.viewAll"></a>
+      </div>
+      <div class="series-featured" id="series"></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="container">
+      <div class="sec-head">
+        <div><p class="kick" data-i18n="home.kickSermons"></p><h2 data-i18n="home.secLectures"></h2></div>
+        <a class="more-link" href="lessons.html?kind=khotba" data-i18n="btn.viewAll"></a>
+      </div>
+      <div class="grid" id="lectures"></div>
+    </div>
+  </section>
+
+  <section class="block alt">
+    <div class="container">
+      <div class="sec-head">
+        <div><p class="kick" data-i18n="home.kickMedia"></p><h2 data-i18n="home.secMedia"></h2></div>
+        <a class="more-link" href="lessons.html?kind=general" data-i18n="btn.viewAll"></a>
+      </div>
+      <div class="grid" id="media"></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="container">
+      <div class="sec-head">
+        <div><p class="kick" data-i18n="home.kickBooks"></p><h2 data-i18n="home.secBooks"></h2></div>
+        <a class="more-link" href="books.html" data-i18n="btn.viewAll"></a>
+      </div>
+      <div class="grid" id="books"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="cols">
+    <div><h4 id="f-title">المكتبة العلمية</h4><p id="f-note"></p></div>
+    <div><h4 data-i18n="footer.sections"></h4><p><a href="lessons.html" data-i18n="footer.lLessons"></a><br><a href="series.html" data-i18n="footer.lSeries"></a><br><a href="lessons.html?kind=khotba" data-i18n="footer.lLectures"></a><br><a href="lessons.html?kind=general" data-i18n="footer.lGeneral"></a><br><a href="books.html" data-i18n="footer.lBooks"></a></p></div>
+    <div><h4 data-i18n="footer.contact"></h4><p id="f-contact"></p><p></p></div>
+  </div>
+  <div class="copy" id="f-copy"></div>
+</footer>
+
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/nav.js"></script>
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const kindLabel = k => (["lesson","lecture","khotba","general","audio","video","book","research","file"].indexOf(k) >= 0 ? t("kind." + k) : t("kind.lesson"));
+  let DATA = null;
+
+  const emptyState = t => '<div class="empty-state"><span class="ic">📭</span>' + t + '</div>';
+
+  function rowCard(l, sMap){
+    const bits = [];
+    if (l.series_id && sMap[l.series_id]) bits.push('<span>' + Store.esc(sMap[l.series_id]) + '</span>');
+    bits.push('<span>' + Store.esc(kindLabel(l.kind)) + '</span>');
+    if (l.duration) bits.push('<span>⏱ ' + Store.esc(l.duration) + '</span>');
+    if (l.date) bits.push('<span>' + Store.esc(l.date) + '</span>');
+    return '<div class="lesson-row"><a class="play-btn" href="' + Store.lessonUrl(l) + '" aria-label="' + t("btn.listen") + '">▶</a>'
+      + '<div><h3><a href="' + Store.lessonUrl(l) + '">' + Store.esc(I18N.ct(l)) + '</a></h3>'
+      + '<div class="sub">' + (l.number ? '<span>' + t('word.lesson') + ' ' + Store.esc(l.number) + '</span>' : '') + bits.join('<span>•</span>') + '</div></div>'
+      + '<a class="btn small ghost go" href="' + Store.lessonUrl(l) + '">' + t('btn.details') + '</a></div>';
+  }
+  function gridCard(l, withThumb){
+    const thumb = (withThumb && l.images && l.images[0]) ? '<img class="thumb" src="' + Store.esc(l.images[0]) + '" loading="lazy" alt="">' : '';
+    return '<article class="card">' + thumb + '<h3><a href="' + Store.lessonUrl(l) + '">' + Store.esc(I18N.ct(l)) + '</a></h3>'
+      + '<div class="meta"><span class="badge">' + Store.esc(kindLabel(l.kind)) + '</span>'
+      + (l.khatib ? '<span>🕌 ' + Store.esc(l.khatib) + '</span>' : '')
+      + (l.hijri_date ? '<span>🗓 ' + Store.esc(l.hijri_date) + '</span>' : '')
+      + (l.duration ? '<span>⏱ ' + Store.esc(l.duration) + '</span>' : '')
+      + (l.audio_url ? '<span>🎧 ' + t('medium.audio') + '</span>' : '') + (l.video_url ? '<span>🎥 ' + t('medium.video') + '</span>' : '') + (l.pdf_url ? '<span>📄</span>' : '') + '</div>'
+      + '<p>' + Store.esc(I18N.cd(l).slice(0, 110)) + '</p>'
+      + '<div class="row"><a class="btn small" href="' + Store.lessonUrl(l) + '">' + (l.audio_url ? t('btn.listen') : t('btn.viewLesson')) + '</a></div></article>';
+  }
+
+  async function init(){
+    try { DATA = await Store.getPublic(); }
+    catch(e){ $("mode-note").innerHTML = '<div class="error">' + t('msg.loadError') + Store.esc(e.message) + '</div>'; return; }
+    if (DATA.mode === "local") $("mode-note").innerHTML = '<div class="mode-banner">' + t('msg.localMode') + '</div>';
+    const s = DATA.settings;
+    document.title = I18N.st(s, "site_title");
+    $("brand-sheikh").textContent = I18N.st(s, "sheikh_name");
+    $("sheikh-name").textContent = I18N.st(s, "sheikh_name");
+    $("tagline").textContent = I18N.st(s, "tagline");
+    $("bio").textContent = I18N.st(s, "bio");
+    $("f-title").textContent = I18N.st(s, "site_title");
+    $("f-note").textContent = I18N.st(s, "footer_note") || "";
+    $("f-contact").textContent = s.contact || "—";
+    $("f-copy").textContent = "© " + new Date().getFullYear() + " " + I18N.st(s, "site_title");
+    if (s.photo) {
+      $("photo-slot").innerHTML = '<img src="' + Store.esc(s.photo) + '" alt="صورة الشيخ">';
+      document.querySelector(".photo-cap").textContent = I18N.st(s, "sheikh_name");
+    }
+    const sMap = {}; DATA.series.forEach(x => sMap[x.id] = I18N.ct(x));
+    const L = DATA.lessons;
+    // إحصاءات الرئيسية: الدروس العلمية · الخطب · المحاضرات العامة · السلاسل العلمية · الكتب والملفات
+    const setStat = (id, n, key) => {
+      const b = $("st-" + id); if (!b) return;
+      b.textContent = n;
+      const lbl = b.parentElement.querySelector("span");
+      if (lbl) lbl.textContent = t(key);
+    };
+    setStat("lessons", L.filter(l => l.kind === "lesson").length, "home.statLessons");
+    setStat("khotab", L.filter(l => l.kind === "khotba").length, "home.statKhotab");
+    setStat("lectures", L.filter(l => l.kind === "general").length, "home.statLectures");
+    setStat("series", DATA.series.length, "home.statSeries");
+    setStat("books", L.filter(l => ["book","research","file"].indexOf(l.kind) >= 0 || l.pdf_url).length, "home.statBooks");
+
+    const latest = L.slice(-5).reverse();
+    $("latest").innerHTML = latest.length ? latest.map(l => rowCard(l, sMap)).join("")
+      : emptyState(t("home.emptyLatest"));
+    const counts = {}; L.forEach(l => { if (l.series_id) counts[l.series_id] = (counts[l.series_id] || 0) + 1; });
+    $("series").innerHTML = DATA.series.length ? DATA.series.slice(0, 3).map(x =>
+      '<a class="series-banner" href="' + Store.seriesUrl(x) + '" style="text-decoration:none"><span class="n">' + ' ' + tf('count.lessons', counts[x.id] || 0) + '</span><h3>' + Store.esc(I18N.ct(x)) + '</h3><p>' + Store.esc(I18N.cd(x).slice(0, 120)) + '</p></a>').join("")
+      : emptyState(t("home.emptySeries"));
+    const lec = L.filter(l => l.kind === "khotba").slice(0, 3);
+    $("lectures").innerHTML = lec.length ? lec.map(l => gridCard(l, true)).join("")
+      : emptyState(t("home.emptyLectures"));
+    const med = L.filter(l => ["general", "audio", "video"].includes(l.kind)).slice(0, 3);
+    $("media").innerHTML = med.length ? med.map(l => gridCard(l, false)).join("")
+      : emptyState(t("home.emptyMedia"));
+    const bk = L.filter(l => ["book","research","file"].indexOf(l.kind) >= 0 || l.pdf_url).slice(0, 3);
+    $("books").innerHTML = bk.length ? bk.map(l => gridCard(l, false)).join("")
+      : emptyState(t("home.emptyBooks"));
+  }
+
+  /* بحث فوري باقتراحات من قاعدة البيانات */
+  function bindSearch(){
+    const input = $("hero-q"), box = $("suggest");
+    let timer = null;
+    async function run(){
+      const q = input.value.trim();
+      if (q.length < 2) { box.style.display = "none"; return; }
+      let items = [];
+      try {
+        const ok = await Store.apiAvailable();
+        if (ok) {
+          const r = await Store.api("/api/public/lessons?q=" + encodeURIComponent(q));
+          items = (r.items || []).slice(0, 6);
+        } else if (DATA) {
+          items = Store.filterLessons(DATA.lessons, { q }).slice(0, 6);
+        }
+      } catch(e){ items = []; }
+      if (!items.length) {
+        box.innerHTML = '<div class="none">' + t('msg.suggestNone') + '</div>';
+      } else {
+        box.innerHTML = items.map(l =>
+          '<a href="' + Store.lessonUrl(l) + '"><span class="k">' + Store.esc(kindLabel(l.kind)) + '</span><span>' + Store.esc(I18N.ct(l)) + '</span></a>').join("")
+          + '<a href="lessons.html?q=' + encodeURIComponent(q) + '" style="font-weight:700;color:var(--blue)">' + t('btn.viewAllResults') + '</a>';
+      }
+      box.style.display = "";
+    }
+    input.addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(run, 280); });
+    input.addEventListener("keydown", e => { if (e.key === "Escape") box.style.display = "none"; });
+    document.addEventListener("click", e => { if (!e.target.closest(".search-hero")) box.style.display = "none"; });
+  }
+
+  init(); bindSearch();
+})();
+</script>
+</body>
+</html>

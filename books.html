@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الكتب والملفات — المكتبة العلمية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<header class="topbar"><div class="wrap">
+<a class="brand" href="index.html"><span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V4a2 2 0 0 0-2-2H6.5A2.5 2.5 0 0 0 4 4.5v15z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/><path d="M9 7h7M9 11h5"/></svg></span><span class="t"><b>المكتبة العلمية</b><small>فضيلة الشيخ أبو أنس محمد مصطفى صار</small></span></a>
+<button class="nav-toggle" id="nav-toggle" aria-label="القائمة" aria-expanded="false">☰</button>
+<nav class="main" id="main-nav"><a href="index.html">الرئيسية</a><a href="lessons.html">الدروس</a><a href="series.html">السلاسل العلمية</a><a href="lessons.html?kind=khotba" data-i18n="nav.khotab"></a><a href="lessons.html?kind=general" data-i18n="nav.lectures"></a><a href="books.html" class="active">الكتب والملفات</a></nav>
+</div></header>
+<main class="container"><section class="block">
+<h2 style="color:var(--navy)" data-i18n="books.title"></h2>
+<div class="grid" id="list"></div>
+</section></main>
+<footer><div class="copy">المكتبة العلمية لفضيلة الشيخ أبي أنس محمد مصطفى صار</div></footer>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/nav.js"></script>
+<script>
+(async function(){
+  const data = await Store.getPublic();
+  const items = data.lessons.filter(l => ["book","research","file"].indexOf(l.kind) >= 0 || l.pdf_url);
+  document.getElementById("list").innerHTML = items.length ? items.map(l =>
+    '<article class="card"><h3><a href="'+Store.lessonUrl(l)+'">'+Store.esc(I18N.ct(l))+'</a></h3>'
+    + '<div class="meta"><span class="badge">'+t("kind."+(l.kind||"book"))+'</span>' + (l.author ? '<span>✍ '+Store.esc(l.author)+'</span>' : '') + (l.date ? '<span>'+Store.esc(l.date)+'</span>' : '') + '</div>'
+    + '<p>'+Store.esc(I18N.cd(l).slice(0,130))+'</p>'
+    + '<div class="row"><a class="btn small" href="'+Store.lessonUrl(l)+'">' + t("btn.view") + '</a>'
+    + (l.pdf_url && l.allow_download !== false ? '<a class="btn small ghost" href="'+Store.esc(l.pdf_url)+'" download>' + t("btn.downloadPdf") + '</a>' : '') + '</div></article>'
+  ).join("") : '<div class="empty">' + t('books.empty') + '</div>';
+})();
+</script>
+</body>
+</html>

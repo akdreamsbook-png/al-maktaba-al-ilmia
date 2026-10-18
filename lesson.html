@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الدرس — المكتبة العلمية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<header class="topbar"><div class="wrap">
+<a class="brand" href="index.html"><span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V4a2 2 0 0 0-2-2H6.5A2.5 2.5 0 0 0 4 4.5v15z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/><path d="M9 7h7M9 11h5"/></svg></span><span class="t"><b>المكتبة العلمية</b><small>فضيلة الشيخ أبو أنس محمد مصطفى صار</small></span></a>
+<button class="nav-toggle" id="nav-toggle" aria-label="القائمة" aria-expanded="false">☰</button>
+<nav class="main" id="main-nav"><a href="index.html">الرئيسية</a><a href="lessons.html" class="active">الدروس</a><a href="series.html">السلاسل العلمية</a><a href="lessons.html?kind=khotba" data-i18n="nav.khotab"></a><a href="lessons.html?kind=general" data-i18n="nav.lectures"></a><a href="books.html">الكتب والملفات</a></nav>
+</div></header>
+<main id="main"><div class="loading container" data-i18n="lesson.loading"></div></main>
+<footer><div class="copy">المكتبة العلمية لفضيلة الشيخ أبي أنس محمد مصطفى صار — جميع المواد محفوظة الحقوق</div></footer>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/nav.js"></script>
+<script>
+(async function(){
+  const main = document.getElementById("main");
+  const id = new URLSearchParams(location.search).get("id");
+  const preview = new URLSearchParams(location.search).get("preview") === "1";
+  if (!id) { main.innerHTML = '<div class="container"><div class="error">' + t("lesson.noId") + '</div></div>'; return; }
+
+  let data, lesson = null, sName = "";
+  const isServer = await Store.apiAvailable().catch(()=>false);
+  // المعاينة للمشرف: يسمح برؤية المسودات
+  if (preview && Store.getToken() && isServer) {
+    try {
+      const r = await Store.api("/api/admin/lessons");
+      lesson = (r.items || []).find(x => x.id === id);
+      const sr = await Store.api("/api/admin/series");
+      const s = (sr.items || []).find(x => x.id === (lesson && lesson.series_id));
+      sName = s ? I18N.ct(s) : "";
+      data = { lessons: r.items || [] };
+    } catch(e){}
+  }
+  if (!lesson) {
+    data = await Store.getPublic();
+    lesson = data.lessons.find(x => x.id === id);
+  }
+  if (!lesson) { main.innerHTML = '<div class="container"><div class="empty">' + t("lesson.notFound") + '</div></div>'; return; }
+  if (!sName) {
+    try {
+      const d2 = data.series ? data : await Store.getPublic();
+      const s = (d2.series || []).find(x => x.id === lesson.series_id);
+      sName = s ? I18N.ct(s) : (lesson.series_name || "");
+    } catch(e){}
+  }
+  document.title = I18N.ct(lesson) + " — " + I18N.t("brand");
+  const tags = (lesson.tags || []).map(t => '<span class="badge">'+Store.esc(t)+'</span>').join(" ");
+  const cats = (lesson.categories || []).map(t => '<span class="badge">'+Store.esc(t)+'</span>').join(" ");
+  const ytId = (lesson.video_url || "").match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{6,})/);
+
+  main.innerHTML =
+  '<div class="lesson-head"><div class="container">'
+  + '<h1>'+Store.esc(I18N.ct(lesson))+'</h1>'
+  + '<div class="meta"><span>'+Store.esc((I18N.isFr() && I18N.st(data && data.settings, "sheikh_name")) || lesson.sheikh || I18N.st(data && data.settings, "sheikh_name"))+'</span>'
+  + (sName ? '<span>' + t("lesson.seriesLbl") + ': <a href="series-view.html?id='+encodeURIComponent(lesson.series_id)+'">'+Store.esc(sName)+'</a></span>' : '')
+  + (lesson.number ? '<span>' + t("lesson.numberLbl") + ': '+Store.esc(lesson.number)+'</span>' : '')
+  + (lesson.duration ? '<span>' + t("lesson.durationLbl") + ': '+Store.esc(lesson.duration)+'</span>' : '')
+  + (lesson.date ? '<span>' + t("lesson.dateLbl") + ': '+Store.esc(lesson.date)+'</span>' : '')
+  + (lesson.hijri_date ? '<span>' + t("lesson.hijriLbl") + ': '+Store.esc(lesson.hijri_date)+'</span>' : '')
+  + (lesson.khatib ? '<span>' + t(lesson.kind === "general" ? "lesson.lecturerLbl" : "lesson.khatibLbl") + ': '+Store.esc(lesson.khatib)+'</span>' : '')
+  + (lesson.place ? '<span>' + t(lesson.kind === "general" ? "lesson.venueLbl" : "lesson.placeLbl") + ': '+Store.esc(lesson.place)+'</span>' : '')
+  + (lesson.author ? '<span>' + t("lesson.authorLbl") + ': '+Store.esc(lesson.author)+'</span>' : '') + '</div>'
+  + (I18N.cd(lesson) ? '<p>'+Store.esc(I18N.cd(lesson))+'</p>' : '')
+  + '<div class="row"><button class="btn small" id="share">' + t("btn.shareLesson") + '</button><button class="btn small ghost" id="copy">' + t("btn.copyLink") + '</button></div>'
+  + '</div></div>'
+  + '<div class="container"><section class="block">'
+  + (lesson.audio_url ? '<div class="player"><div class="title">' + t("lesson.audioTitle") + '</div>'
+    + '<audio id="au" controls preload="metadata" src="'+Store.esc(lesson.audio_url)+'"></audio>'
+    + '<div class="p-controls"><button id="back">' + t("lesson.back10") + '</button><button id="play">' + t("lesson.playPause") + '</button><button id="fwd">' + t("lesson.fwd10") + '</button>'
+    + '<label class="p-time">' + t("lesson.speed") + ' <select id="rate"><option value="1">1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option><option value="0.75">0.75x</option></select></label>'
+    + '<span class="p-time" id="t"></span></div></div>' : '<div class="notice">' + t("lesson.noAudio") + '</div>')
+  + (ytId ? '<div class="video"><h3 style="color:var(--navy)">' + t("lesson.videoTitle") + '</h3><iframe src="https://www.youtube.com/embed/'+ytId[1]+'" allowfullscreen loading="lazy"></iframe></div>'
+    : (lesson.video_url ? '<p><a class="btn small" href="'+Store.esc(lesson.video_url)+'" target="_blank" rel="noopener">' + t("lesson.watchVideo") + '</a></p>' : ''))
+  + (lesson.pdf_url ? '<h3 style="color:var(--navy)">' + t("lesson.pdfTitle") + '</h3><div class="pdfbox"><iframe src="'+Store.esc(lesson.pdf_url)+'" title="' + t("lesson.pdfTitle") + '"></iframe></div>'
+    + (lesson.allow_download !== false ? '<p><a class="btn small ghost" href="'+Store.esc(lesson.pdf_url)+'" download>' + t("lesson.downloadFile") + '</a></p>' : '') : '')
+  + ((lesson.images && lesson.images.length) ? '<h3 style="color:var(--navy)">' + t("lesson.imagesTitle") + '</h3>' + lesson.images.map(u=>'<img class="lesson-img" src="'+Store.esc(u)+'" loading="lazy" alt="صورة مرفقة">').join("") : '')
+  + (lesson.text ? '<h3 style="color:var(--navy)">' + t("lesson.textTitle") + '</h3><div class="lesson-text">'+Store.esc(lesson.text).replace(/\n/g,"<br>")+'</div>' : '')
+  + ((tags || cats) ? '<h3 style="color:var(--navy)">' + t("lesson.tagsTitle") + '</h3><div class="row">'+cats+' '+tags+'</div>' : '')
+  + '<div class="prevnext" id="pn"></div>'
+  + '</section></div>';
+
+  // مشغل الصوت: استئناف + اختصارات
+  const au = document.getElementById("au");
+  if (au) {
+    const key = Store.resumeKey(lesson.id);
+    try { const saved = parseFloat(localStorage.getItem(key) || "0"); if (saved > 5) au.currentTime = saved; } catch(e){}
+    au.addEventListener("timeupdate", () => {
+      try { localStorage.setItem(key, String(Math.floor(au.currentTime))); } catch(e){}
+      const f = s => Math.floor(s/60)+":"+String(Math.floor(s%60)).padStart(2,"0");
+      document.getElementById("t").textContent = f(au.currentTime||0) + " / " + f(au.duration||0);
+    });
+    document.getElementById("play").onclick = () => au.paused ? au.play() : au.pause();
+    document.getElementById("back").onclick = () => au.currentTime = Math.max(0, au.currentTime - 10);
+    document.getElementById("fwd").onclick = () => au.currentTime = (au.currentTime||0) + 10;
+    document.getElementById("rate").onchange = e => au.playbackRate = parseFloat(e.target.value);
+    au.addEventListener("ended", () => { try { localStorage.removeItem(key); } catch(e){} });
+  }
+  document.getElementById("share").onclick = async () => {
+    const url = location.origin + location.pathname + "?id=" + encodeURIComponent(lesson.id);
+    if (navigator.share) { try { await navigator.share({ title: lesson.title, url }); } catch(e){} }
+    else { await navigator.clipboard.writeText(url); alert(t("msg.copiedLesson")); }
+  };
+  document.getElementById("copy").onclick = async () => {
+    const url = location.origin + location.pathname + "?id=" + encodeURIComponent(lesson.id);
+    await navigator.clipboard.writeText(url); alert(t("msg.copied"));
+  };
+  // السابق / التالي ضمن السلسلة
+  try {
+    const all = (data.lessons || []).filter(l => lesson.series_id && l.series_id === lesson.series_id)
+      .sort((a,b)=>((a.sort??a.number??0)-(b.sort??b.number??0)));
+    const i = all.findIndex(l => l.id === lesson.id);
+    const pn = document.getElementById("pn");
+    if (all.length > 1 && i >= 0) {
+      const prev = all[i-1], next = all[i+1];
+      pn.innerHTML = (prev ? '<a class="btn ghost" href="lesson.html?id='+encodeURIComponent(prev.id)+'">→ ' + t("lesson.prev") + ': '+Store.esc(I18N.ct(prev))+'</a>' : '<span></span>')
+        + (next ? '<a class="btn" href="lesson.html?id='+encodeURIComponent(next.id)+'">' + t("lesson.next") + ': '+Store.esc(I18N.ct(next))+' ←</a>' : '<span></span>');
+    }
+  } catch(e){}
+})();
+</script>
+</body>
+</html>
