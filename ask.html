@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اسأل الشيخ — المكتبة العلمية</title>
+<meta name="description" content="أرسل سؤالك العلمي مكتوبًا أو صوتيًا إلى فضيلة الشيخ أبي أنس محمد مصطفى صار، واستعرض الأسئلة المجاب عنها.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=20261018">
+</head>
+<body>
+<header class="topbar"><div class="wrap">
+<a class="brand" href="index.html"><span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V4a2 2 0 0 0-2-2H6.5A2.5 2.5 0 0 0 4 4.5v15z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/><path d="M9 7h7M9 11h5"/></svg></span><span class="t"><b>المكتبة العلمية</b><small>فضيلة الشيخ أبو أنس محمد مصطفى صار</small></span></a>
+<button class="nav-toggle" id="nav-toggle" aria-label="القائمة" aria-expanded="false">☰</button>
+<nav class="main" id="main-nav"><a href="index.html">الرئيسية</a><a href="lessons.html">الدروس</a><a href="series.html">السلاسل العلمية</a><a href="lessons.html?kind=khotba" data-i18n="nav.khotab"></a><a href="lessons.html?kind=general" data-i18n="nav.lectures"></a><a href="books.html">الكتب والملفات</a><a href="ask.html" class="active" data-i18n="nav.ask"></a><a href="admin.html" class="admin-link">🔒 لوحة التحكم</a></nav>
+</div></header>
+
+<div class="hero hero-ask">
+  <div class="container">
+    <div class="hero-inner" style="padding:34px 0 30px">
+      <div>
+        <span class="over-title" data-i18n="ask.over"></span>
+        <h1 style="font-size:clamp(26px,4vw,42px)" data-i18n="ask.h1"></h1>
+        <p class="tagline" id="ask-sub" data-i18n="ask.intro"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="container">
+  <!-- استقبال الأسئلة -->
+  <section class="block">
+    <div class="ask-mode-box">
+      <h3 style="color:var(--navy)" data-i18n="ask.how"></h3>
+      <div class="ask-cards">
+        <button type="button" class="ask-card" id="m-audio">
+          <span class="ic">🎙️</span><b data-i18n="ask.mAudio"></b><small data-i18n="ask.mAudioS"></small>
+        </button>
+        <button type="button" class="ask-card" id="m-written">
+          <span class="ic">⌨️</span><b data-i18n="ask.mWritten"></b><small data-i18n="ask.mWrittenS"></small>
+        </button>
+      </div>
+
+      <!-- النموذج: مشترك (اسم، تواصل، تصنيف، نوع الإجابة) -->
+      <div id="srv-note" style="display:none;background:#fff8e1;border:1px solid #e6c84a;border-radius:12px;padding:10px 14px;margin-top:10px;font-size:13.5px" data-i18n="ask.offlineNote"></div>
+      <form class="f" id="qform" style="display:none;margin-top:14px">
+        <input type="hidden" name="qkind" id="f-qkind">
+        <input type="text" name="website" id="f-website" style="display:none" tabindex="-1" autocomplete="off">
+        <div class="half">
+          <div>
+            <label data-i18n="ask.fName"></label>
+            <input id="f-name" maxlength="60" data-i18n-placeholder="ask.fNameP">
+          </div>
+          <div>
+            <label data-i18n="ask.fContact"></label>
+            <input id="f-contact" dir="ltr" maxlength="120" data-i18n-placeholder="ask.fContactP">
+          </div>
+        </div>
+        <label style="font-weight:400;display:flex;gap:8px;align-items:center">
+          <input type="checkbox" id="f-anon" style="width:auto">
+          <span data-i18n="ask.fAnon"></span>
+        </label>
+        <div class="half">
+          <div>
+            <label data-i18n="ask.fCat"></label>
+            <select id="f-cat">
+              <option value="عقيدة" data-i18n="ask.cat.akida"></option>
+              <option value="عبادات" data-i18n="ask.cat.ibadat"></option>
+              <option value="معاملات" data-i18n="ask.cat.muamalat"></option>
+              <option value="أسرة" data-i18n="ask.cat.usra"></option>
+              <option value="أخلاق" data-i18n="ask.cat.akhlaq"></option>
+              <option value="أخرى" data-i18n="ask.cat.other"></option>
+            </select>
+          </div>
+          <div>
+            <label data-i18n="ask.fTitle"></label>
+            <input id="f-title" maxlength="120">
+          </div>
+        </div>
+        <div data-i18n-hidden id="written-only">
+          <label data-i18n="ask.fText"></label>
+          <textarea id="f-text" maxlength="5000" style="min-height:130px"></textarea>
+          <div id="t-count" style="color:var(--muted);font-size:12px"></div>
+        </div>
+
+        <div data-i18n-hidden id="audio-only" style="display:none">
+          <div class="rec-box">
+            <button type="button" class="btn" id="rec-start">🎙️ <span data-i18n="ask.recStart"></span></button>
+            <button type="button" class="btn danger" id="rec-stop" style="display:none">⏹️ <span data-i18n="ask.recStop"></span></button>
+            <span id="rec-time" dir="ltr" style="font-weight:700;color:var(--navy)"></span>
+            <span class="rec-dot" id="rec-dot" style="display:none"></span>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <input type="file" id="rec-file" accept="audio/*,.mp3,.m4a,.wav,.ogg,.opus,.webm,.aac,.3gp,.amr,.wma,.flac">
+            <button type="button" class="btn small" id="rec-clear" style="display:none" data-i18n="ask.recDel"></button>
+          </div>
+          <div style="color:var(--muted);font-size:12.5px;margin-top:6px" data-i18n="ask.recHint"></div>
+          <audio id="rec-preview" controls style="width:100%;margin-top:8px;display:none"></audio>
+          <div id="rec-status" style="font-size:13px;color:var(--navy);font-weight:600"></div>
+        </div>
+
+        <label data-i18n="ask.fAnsType"></label>
+        <label style="font-weight:400"><input type="radio" name="wans" value="public" checked style="width:auto"> <span data-i18n="ask.ansPublic"></span></label>
+        <label style="font-weight:400"><input type="radio" name="wans" value="private" style="width:auto"> <span data-i18n="ask.ansPrivate"></span></label>
+        <div style="color:var(--muted);font-size:12.5px" data-i18n="ask.ansNote"></div>
+        <div style="margin-top:12px"><button class="btn" type="submit" id="send-btn">📨 <span data-i18n="ask.send"></span></button></div>
+        <div id="send-status"></div>
+      </form>
+
+      <!-- رسالة النجاح -->
+      <div id="ok-box" class="ok-banner" style="display:none">
+        <h3 data-i18n="ask.okTitle"></h3>
+        <p data-i18n="ask.okText"></p>
+        <p style="margin:10px 0 4px"><b data-i18n="ask.okTrack"></b></p>
+        <div class="track-chip"><code id="ok-track" dir="ltr"></code><button type="button" class="btn small ghost" id="copy-track" data-i18n="ask.copy"></button></div>
+        <a href="#answers" style="font-size:14px" class="btn small light" data-i18n="ask.okSee"></a>
+      </div>
+
+      <!-- متابعة سؤالك -->
+      <div class="track-box">
+        <label data-i18n="ask.trackT" style="margin:0"></label>
+        <div class="row">
+          <input id="tp-code" dir="ltr" placeholder="XXXX-XXXX" maxlength="12" style="max-width:220px">
+          <button type="button" class="btn small" id="tp-btn" data-i18n="ask.trackBtn"></button>
+        </div>
+        <div id="tp-out" style="font-size:14px;margin-top:6px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- الأسئلة المجاب عنها -->
+  <section class="block" id="answers">
+    <h2 style="color:var(--navy)" data-i18n="ask.answersTitle"></h2>
+    <p style="color:var(--muted)" data-i18n="ask.answersNote"></p>
+    <div class="filters">
+      <input id="a-q" data-i18n-placeholder="ask.searchP" style="min-width:200px;flex:1">
+      <select id="a-cat">
+        <option value="" data-i18n="ask.allCats"></option>
+        <option value="عقيدة" data-i18n="ask.cat.akida"></option>
+        <option value="عبادات" data-i18n="ask.cat.ibadat"></option>
+        <option value="معاملات" data-i18n="ask.cat.muamalat"></option>
+        <option value="أسرة" data-i18n="ask.cat.usra"></option>
+        <option value="أخلاق" data-i18n="ask.cat.akhlaq"></option>
+        <option value="أخرى" data-i18n="ask.cat.other"></option>
+      </select>
+    </div>
+    <div id="a-list" style="margin-top:12px"></div>
+  </section>
+</main>
+
+<footer><div class="copy">المكتبة العلمية لفضيلة الشيخ أبي أنس محمد مصطفى صار</div></footer>
+<script src="assets/js/i18n.js?v=20261018"></script>
+<script src="assets/js/store.js?v=20261018"></script>
+<script src="assets/js/nav.js?v=20261018"></script>
+<script>
+(async function(){
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s||"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const t = k => (typeof I18N !== "undefined" && I18N && I18N.t) ? I18N.t(k) : "";
+
+  /* ---------- اختيار طريقة الإرسال ---------- */
+  let mode = null; // "written" | "audio"
+  function setMode(m){
+    if (SERVER === false) { $("srv-note").style.display = ""; $("qform").style.display = "none"; return; }
+    mode = m;
+    $("f-qkind").value = m;
+    $("m-audio").classList.toggle("on", m==="audio");
+    $("m-written").classList.toggle("on", m==="written");
+    $("qform").style.display = "";
+    $("written-only").style.display = m==="written" ? "" : "none";
+    $("audio-only").style.display  = m==="audio" ? "" : "none";
+    try { $("qform").scrollIntoView({behavior:"smooth", block:"center"}); } catch(e){}
+  }
+  $("m-written").onclick = () => setMode("written");
+  $("m-audio").onclick = () => setMode("audio");
+
+  const CATS = ["عقيدة","عبادات","معاملات","أسرة","أخلاق","أخرى"];
+  const CTK = { "عقيدة":"akida","عبادات":"ibadat","معاملات":"muamalat","أسرة":"usra","أخلاق":"akhlaq","أخرى":"other" };
+
+  /* ---------- عدّاد النص ---------- */
+  $("f-text").addEventListener("input", () => {
+    $("t-count").textContent = ($("f-text").value || "").length + " / 5000";
+  });
+
+  /* ---------- تسجيل صوتي ---------- */
+  let recBlob = null, recorder = null, chunks = [], timer = null, seconds = 0, stream = null;
+  const MAX_QA = 15 * 1024 * 1024;
+  function recStatus(msg){ $("rec-status").textContent = msg || ""; }
+  function fmt(s){ return String(Math.floor(s/60)).padStart(2,"0") + ":" + String(s%60).padStart(2,"0"); }
+
+  $("rec-start").onclick = async () => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === "undefined") {
+      recStatus(t("ask.recNoSupport")); return;
+    }
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch (e) { recStatus(t("ask.recDenied")); return; }
+    chunks = []; seconds = 0;
+    try { recorder = new MediaRecorder(stream); } catch(e) { recStatus(t("ask.recNoSupport")); stream.getTracks().forEach(x=>x.stop()); return; }
+    recorder.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+    recorder.onstop = () => {
+      stream.getTracks().forEach(x => x.stop());
+      recBlob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
+      if (recBlob.size > MAX_QA) { recStatus(t("ask.tooBig")); recBlob = null; $("rec-preview").style.display="none"; return; }
+      $("rec-preview").src = URL.createObjectURL(recBlob);
+      $("rec-preview").style.display = "";
+      $("rec-clear").style.display = "";
+      recStatus(t("ask.recReady") + " (" + fmt(seconds) + " · " + Math.round(recBlob.size/1024) + " KB)");
+      $("rec-start").style.display = ""; $("rec-stop").style.display = "none";
+      $("rec-dot").style.display = "none"; clearInterval(timer);
+    };
+    recorder.start();
+    $("rec-start").style.display = "none"; $("rec-stop").style.display = "";
+    $("rec-dot").style.display = "";
+    recStatus(t("ask.recOn"));
+    timer = setInterval(() => { seconds++; $("rec-time").textContent = fmt(seconds); }, 1000);
+  };
+  $("rec-stop").onclick = () => { if (recorder && recorder.state !== "inactive") recorder.stop(); };
+  $("rec-clear").onclick = () => {
+    recBlob = null; $("rec-preview").pause();
+    $("rec-preview").removeAttribute("src"); $("rec-preview").style.display="none";
+    $("rec-clear").style.display="none"; $("rec-time").textContent=""; recStatus("");
+  };
+  $("rec-file").addEventListener("change", () => {
+    const f = $("rec-file").files[0]; recBlob = null; recStatus("");
+    $("rec-clear").style.display="none"; $("rec-preview").style.display="none";
+    if (!f) return;
+    if (!/^audio\//.test(f.type || "") && !/\.(mp3|m4a|wav|ogg|opus|webm|aac|3gp|amr|wma|flac)$/i.test(f.name)) {
+      recStatus(t("ask.badType")); return;
+    }
+    if (f.size > MAX_QA) { recStatus(t("ask.tooBig")); return; }
+    recBlob = f;
+    $("rec-preview").src = URL.createObjectURL(f); $("rec-preview").style.display = "";
+    $("rec-clear").style.display = "";
+    recStatus(t("ask.fileReady") + " (" + f.name + " · " + Math.round(f.size/1024) + " KB)");
+  });
+
+  /* ---------- الإرسال ---------- */
+  function setStatus(el, msg, isErr){
+    el.innerHTML = '<div class="' + (isErr? "error" : "ok-mini") + '">' + esc(msg) + '</div>';
+  }
+  $("qform").addEventListener("submit", async ev => {
+    ev.preventDefault();
+    const st = $("send-status");
+    // فحص المتصفح أولاً (الخادم يتحقق كذلك)
+    if (!mode) { setStatus(st, t("ask.errNoMode"), true); return; }
+    const title = $("f-title").value.trim();
+    if (title.length < 5) { setStatus(st, t("ask.errTitle"), true); return; }
+    if ($("f-website").value) return; // فخ الروبوتات
+    if (mode === "written" && $("f-text").value.trim().length < 10) { setStatus(st, t("ask.errText"), true); return; }
+    if (mode === "audio" && !recBlob) { setStatus(st, t("ask.errNoRec"), true); return; }
+    const contact = $("f-contact").value.trim();
+    if (contact && !(/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(contact) || /^[+]?[\d\s\-()]{6,20}$/.test(contact))) {
+      setStatus(st, t("ask.errContact"), true); return;
+    }
+    const btn = $("send-btn"); btn.disabled = true;
+    try {
+      const fd = new FormData();
+      fd.append("qkind", mode);
+      fd.append("category", $("f-cat").value);
+      fd.append("title", title);
+      fd.append("text", mode==="written" ? $("f-text").value.trim() : "");
+      fd.append("name", $("f-anon").checked ? "" : $("f-name").value.trim());
+      fd.append("anon", $("f-anon").checked ? "1" : "0");
+      fd.append("contact", contact);
+      fd.append("want_public", document.querySelector('input[name="wans"]:checked').value);
+      fd.append("website", $("f-website").value);
+      if (mode === "audio") {
+        recStatus(t("ask.uploading"));
+        const ext = (recBlob.name ? recBlob.name.split(".").pop() : (recBlob.type.includes("webm") ? "webm" : recBlob.type.includes("mp4") ? "mp4" : "webm"));
+        fd.append("qaudio", recBlob, "question." + ext);
+      }
+      const r = await fetch("/api/questions", { method: "POST", body: fd });
+      let j = {};
+      try { j = await r.json(); } catch(e) {}
+      if (!r.ok) throw new Error(j.error || ("خطأ " + r.status));
+      // نجاح فعلي من الخادم
+      $("qform").style.display = "none";
+      $("ok-track").textContent = j.track;
+      $("ok-box").style.display = "";
+      $("m-audio").classList.remove("on"); $("m-written").classList.remove("on");
+      mode = null;
+      loadAnswers();
+    } catch (e) {
+      setStatus(st, (t("ask.errSend") + e.message), true);
+    } finally { btn.disabled = false; }
+  });
+
+  /* ---------- متابعة بالرمز ---------- */
+  const ST_LBL = { new: "ask.st.new", review: "ask.st.review", answered: "ask.st.answered", deferred: "ask.st.deferred" };
+  $("tp-btn").onclick = async () => {
+    const code = $("tp-code").value.trim().toUpperCase().replace(/\s+/g, "");
+    if (!code) return;
+    $("tp-out").innerHTML = "";
+    try {
+      const r = await fetch("/api/questions/track?code=" + encodeURIComponent(code));
+      let j = {}; try { j = await r.json(); } catch(e) {}
+      if (!r.ok) throw new Error(t("ask.trackNone"));
+      const i = j.item;
+      $("tp-out").innerHTML = '<div class="ok-mini">' + esc(i.title) + " — " + esc(t(ST_LBL[i.status] || "ask.st.new")) + '</div>';
+    } catch (e) { $("tp-out").innerHTML = '<div class="error">' + esc(e.message) + '</div>'; }
+  };
+
+  /* ---------- الأسئلة المجاب عنها ---------- */
+  let SERVER = null, ANSWERS = [];
+  async function detectServer(){ SERVER = await Store.apiAvailable(); if (SERVER === false) $("srv-note").style.display = ""; return SERVER; }
+  async function loadAnswers(){
+    if (SERVER === null) await detectServer();
+    if (SERVER) {
+      const r = await Store.api("/api/public/qaanswers");
+      ANSWERS = r.items || [];
+    } else {
+      try {
+        const r = await fetch("assets/data/qaanswers.json", { cache: "no-cache" });
+        ANSWERS = r.ok ? (await r.json()).items || [] : [];
+      } catch (e) { ANSWERS = []; }
+    }
+    renderAnswers();
+  }
+  function shareBtn(id){
+    const url = location.origin + location.pathname + "?a=" + encodeURIComponent(id);
+    return '<button class="btn small ghost" data-share="' + id + '" data-url="' + esc(url) + '">🔗 ' + t("ask.share") + '</button>';
+  }
+  function renderAnswers(){
+    const q = ($("a-q").value || "").trim();
+    const cat = $("a-cat").value;
+    const items = ANSWERS.filter(a => (!q || ((a.title||"")+" "+(a.text||"")+" "+(a.answer||"")).includes(q)) && (!cat || a.category===cat));
+    const box = $("a-list");
+    if (!SERVER && !ANSWERS.length) {
+      box.innerHTML = '<div class="empty-state"><span class="ic">🔌</span>' + t("ask.offlineNote") + '</div>';
+      return;
+    }
+    if (!items.length) {
+      box.innerHTML = '<div class="empty-state"><span class="ic">💬</span>' + t("ask.noAnswers") + '</div>';
+      return;
+    }
+    box.innerHTML = items.map(a =>
+      '<article class="qa-card" id="a-'+esc(a.id)+'">'
+      + '<div class="qa-q"><span class="qa-badge">' + esc(t("ask.cat." + (CTK[a.category] || "other"))) + '</span>'
+      + '<h3>' + esc(a.title) + '</h3>'
+      + (a.text ? '<p>' + esc(a.text) + '</p>' : '')
+      + (a.audio ? '<audio controls src="' + esc(a.audio) + '"></audio>' : '')
+      + '</div>'
+      + '<div class="qa-a"><div class="qa-who">' + t("ask.sheikhAnswered") + '</div>'
+      + (a.answer ? '<p>' + esc(a.answer) + '</p>' : '')
+      + (a.answer_audio ? '<audio controls src="' + esc(a.answer_audio) + '"></audio>' : '')
+      + (a.answer_file && /\.pdf$/i.test(a.answer_file) ? '<a class="btn small" href="' + esc(a.answer_file) + '" target="_blank" rel="noopener">📕 ' + t("ask.pdf") + '</a>' : '')
+      + (a.answer_at ? '<div class="qa-date">' + esc(a.answer_at.slice(0,10)) + '</div>' : '')
+      + '</div>' + shareBtn(a.id) + '</article>'
+    ).join("");
+    box.querySelectorAll("[data-share]").forEach(b => {
+      b.onclick = async () => {
+        try {
+          if (navigator.share) await navigator.share({ title: document.title, url: b.dataset.url });
+          else { await navigator.clipboard.writeText(b.dataset.url); b.querySelector("span").textContent = t("ask.copied"); }
+        } catch (e) {}
+      };
+    });
+  }
+  $("a-q").addEventListener("input", () => { clearTimeout(window.__aT); window.__aT = setTimeout(renderAnswers, 250); });
+  $("a-cat").addEventListener("change", renderAnswers);
+
+  /* فتح رابط مشاركة مباشر */
+  const a0 = new URLSearchParams(location.search).get("a");
+  loadAnswers().then(() => {
+    if (a0) { const el = document.getElementById("a-"+a0); if (el) { el.scrollIntoView({behavior:"smooth"}); el.classList.add("flash"); } }
+  });
+  $("copy-track").onclick = async () => { try { await navigator.clipboard.writeText($("ok-track").textContent); $("copy-track").textContent = t("ask.copied"); } catch(e) {} };
+})();
+</script>
+</body>
+</html>

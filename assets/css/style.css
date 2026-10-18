@@ -429,3 +429,42 @@ html[dir="ltr"] .brand .t small,html[dir="ltr"] .brand .t b{font-family:inherit}
   nav.main a{padding:7px 7px;font-size:13px}
   .brand .t b{font-size:15px}
 }
+
+/* ================= اسأل الشيخ ================= */
+.hero-ask{min-height:auto}
+.ask-mode-box{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;margin-top:-46px;position:relative;z-index:2;box-shadow:var(--shadow)}
+.ask-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 4px}
+.ask-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:18px 12px;border:2px solid var(--line);border-radius:16px;background:#f8fbfe;cursor:pointer;font-family:inherit;transition:border-color .15s,background .15s}
+.ask-card .ic{font-size:34px}
+.ask-card b{color:var(--navy);font-size:16.5px}
+.ask-card small{color:var(--muted);font-size:12.5px}
+.ask-card.on{border-color:var(--blue);background:#eef6ff;box-shadow:0 4px 14px rgba(31,111,180,.12)}
+.ask-card:hover{border-color:var(--blue)}
+.rec-box{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#f2f7fd;border:1px dashed #9dc0e8;border-radius:14px;padding:12px}
+.rec-dot{width:12px;height:12px;border-radius:50%;background:#d33;animation:recpulse 1s infinite}
+@keyframes recpulse{0%,100%{opacity:1}50%{opacity:.25}}
+.btn.danger{background:linear-gradient(180deg,#c0392b,#96281b)}
+.ok-banner{background:#f0fbf3;border:1.5px solid #7dc592;border-radius:16px;padding:16px 18px;margin-top:12px}
+.ok-banner h3{color:#0B7A3B;margin:0 0 6px}
+.ok-banner p{margin:4px 0;font-size:14.5px}
+.ok-mini{background:#f0fbf3;border:1px solid #7dc592;color:#0B7A3B;border-radius:10px;padding:8px 12px;font-size:14px}
+.track-chip{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px dashed var(--blue);border-radius:12px;padding:8px 12px;margin:8px 0;width:fit-content}
+.track-chip code{font-size:19px;font-weight:800;letter-spacing:2px;color:var(--navy)}
+.track-box{background:#f8fbfe;border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-top:12px}
+.track-box label{color:var(--navy);font-weight:700;font-size:14px;display:block;margin-bottom:6px}
+.qa-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:14px;box-shadow:var(--shadow-sm)}
+.qa-card.flash{border-color:var(--blue);box-shadow:0 0 0 3px rgba(43,131,204,.25)}
+.qa-q h3{margin:8px 0 6px;color:var(--navy)}
+.qa-q p{margin:4px 0;font-size:15px}
+.qa-badge{display:inline-block;background:#eaf2fb;color:var(--navy);border:1px solid #cfe0f2;border-radius:999px;padding:3px 12px;font-size:12.5px;font-weight:700}
+.qa-a{background:#f4f8fc;border-inline-start:4px solid var(--blue);border-radius:12px;padding:12px 14px;margin-top:10px}
+.qa-who{font-weight:700;color:var(--navy);font-size:13.5px;margin-bottom:6px}
+.qa-a p{margin:4px 0;font-size:15px}
+.qa-date{color:var(--muted);font-size:12.5px;margin-top:8px}
+.qa-card audio{width:100%;margin:6px 0;max-width:520px}
+.mini-badge{display:inline-block;background:#c0392b;color:#fff;border-radius:999px;padding:0 7px;font-size:11px;font-weight:800;margin-inline-start:6px}
+.admin-q-card{border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px;background:#fff}
+.admin-q-card .qh{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.admin-q-card .qb{background:#f8f9fa;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:8px}
+.st-select{border:1.5px solid var(--line);border-radius:10px;padding:6px 10px;font-family:inherit;font-size:13px}
+@media(max-width:560px){.ask-cards{grid-template-columns:1fr}.ask-mode-box{padding:14px}}

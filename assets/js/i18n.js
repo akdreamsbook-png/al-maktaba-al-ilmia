@@ -25,6 +25,7 @@ const I18N = (function () {
     "nav.lectures": { ar: "المحاضرات", fr: "Conférences" },
     "nav.books": { ar: "الكتب والبحوث", fr: "Livres" },
     "nav.admin": { ar: "🔒 لوحة التحكم", fr: "🔒 Admin" },
+    "nav.ask": { ar: "اسأل الشيخ", fr: "Questions" },
     "nav.menu": { ar: "القائمة", fr: "Menu" },
     /* التذييل */
     "footer.sections": { ar: "أقسام المكتبة", fr: "Sections" },
@@ -150,7 +151,75 @@ const I18N = (function () {
     "common.loading": { ar: "جارٍ التحميل…", fr: "Chargement…" },
     "msg.loadError": { ar: "تعذر تحميل البيانات: ", fr: "Impossible de charger les données : " },
     "msg.localMode": { ar: "وضع العرض المحلي — شغّل الخادم (server.py) لعرض البيانات المركزية.", fr: "Mode local — lancez le serveur (server.py) pour afficher les données centralisées." },
-    "msg.suggestNone": { ar: "لا نتائج مطابقة — اضغط بحث لعرض صفحة الدروس.", fr: "Aucun résultat — cliquez sur Rechercher pour ouvrir la page des cours." }
+    "msg.suggestNone": { ar: "لا نتائج مطابقة — اضغط بحث لعرض صفحة الدروس.", fr: "Aucun résultat — cliquez sur Rechercher pour ouvrir la page des cours." },
+    /* ===== اسأل الشيخ ===== */
+    "ask.over": { ar: "باب الأسئلة العلمية", fr: "Section des questions" },
+    "ask.h1": { ar: "اسأل الشيخ", fr: "Posez votre question au cheikh" },
+    "ask.intro": { ar: "أرسل سؤالك مكتوبًا أو صوتيًا، وسيُراجعه فضيلة الشيخ ويجيب عنه بإذن الله. الإجابة العامة تظهر على الموقع بعد اعتمادها.", fr: "Envoyez votre question écrite ou audio ; le cheikh la lira et y répondra, si Dieu le veut. La réponse publique apparaîtra ici après validation." },
+    "ask.how": { ar: "كيف تريد إرسال سؤالك؟", fr: "Comment voulez-vous envoyer votre question ?" },
+    "ask.mAudio": { ar: "سؤال صوتي", fr: "Question audio" },
+    "ask.mAudioS": { ar: "سجّل من جهازك أو ارفع تسجيلًا", fr: "Enregistrez ou importez un audio" },
+    "ask.mWritten": { ar: "سؤال مكتوب", fr: "Question écrite" },
+    "ask.mWrittenS": { ar: "اكتب سؤالك بالتفصيل", fr: "Écrivez votre question en détail" },
+    "ask.fName": { ar: "اسمك (اختياري)", fr: "Votre nom (facultatif)" },
+    "ask.fNameP": { ar: "يظهر مع سؤالك إن لم تخفه", fr: "Affiché avec votre question si non masqué" },
+    "ask.fContact": { ar: "وسيلة تواصل (اختياري — للإجابة الخاصة)", fr: "Contact (facultatif — réponse privée)" },
+    "ask.fContactP": { ar: "بريد إلكتروني أو رقم واتساب", fr: "E-mail ou numéro WhatsApp" },
+    "ask.fAnon": { ar: "إخفاء اسمي عن زوار الموقع (يظهر للإدارة فقط)", fr: "Masquer mon nom aux visiteurs (visible de l’administration)" },
+    "ask.fCat": { ar: "تصنيف السؤال", fr: "Catégorie de la question" },
+    "ask.cat.akida": { ar: "عقيدة", fr: "Croyance" },
+    "ask.cat.ibadat": { ar: "عبادات", fr: "Adorations" },
+    "ask.cat.muamalat": { ar: "معاملات", fr: "Transactions" },
+    "ask.cat.usra": { ar: "أسرة", fr: "Famille" },
+    "ask.cat.akhlaq": { ar: "أخلاق", fr: "Mœurs" },
+    "ask.cat.other": { ar: "أخرى", fr: "Autres" },
+    "ask.fTitle": { ar: "عنوان مختصر للسؤال", fr: "Titre court de la question" },
+    "ask.fText": { ar: "نص السؤال بالتفصيل", fr: "Texte détaillé de la question" },
+    "ask.fAnsType": { ar: "نوع الإجابة المطلوبة", fr: "Type de réponse souhaité" },
+    "ask.ansPublic": { ar: "عامة تُنشر على الموقع", fr: "Publique (publiée sur le site)" },
+    "ask.ansPrivate": { ar: "خاصة تصل صاحب السؤال فقط", fr: "Privée (à la personne uniquement)" },
+    "ask.ansNote": { ar: "لا تُنشر أي سؤال أو إجابة تلقائيًا؛ النشر بعد مراجعة فضيلة الشيخ أو المسؤول.", fr: "Aucune question ni réponse n’est publiée automatiquement ; publication après examen du cheikh ou de l’administrateur." },
+    "ask.send": { ar: "إرسال السؤال", fr: "Envoyer la question" },
+    "ask.recStart": { ar: "بدء التسجيل", fr: "Commencer l’enregistrement" },
+    "ask.recStop": { ar: "إيقاف التسجيل", fr: "Arrêter" },
+    "ask.recDel": { ar: "حذف التسجيل", fr: "Supprimer l’enregistrement" },
+    "ask.recHint": { ar: "يمكنك الاستماع إلى التسجيل قبل الإرسال وإعادة تسجيله، أو رفع ملف صوتي مسجَّل مسبقًا.", fr: "Écoutez avant d’envoyer, réenregistrez, ou importez un fichier audio existant." },
+    "ask.recOn": { ar: "🎙️ جارٍ التسجيل…", fr: "🎙️ Enregistrement en cours…" },
+    "ask.recReady": { ar: "✓ تم التسجيل — استمع قبل الإرسال", fr: "✓ Enregistré — écoutez avant d’envoyer" },
+    "ask.recDenied": { ar: "لم يُمنح إذن الميكروفون — فعِّله من إعدادات المتصفح أو استخدم رفع ملف.", fr: "Micro refusé — activez-le dans le navigateur ou importez un fichier." },
+    "ask.recNoSupport": { ar: "التسجيل غير مدعوم في هذا المتصفح — استخدم زر رفع ملف صوتي.", fr: "Enregistrement non pris en charge — importez un fichier audio." },
+    "ask.uploading": { ar: "⏳ جارٍ رفع التسجيل…", fr: "⏳ Envoi de l’enregistrement…" },
+    "ask.fileReady": { ar: "✓ الملف جاهز:", fr: "✓ Fichier prêt :" },
+    "ask.tooBig": { ar: "الملف أكبر من الحد المسموح (15MB)", fr: "Fichier trop volumineux (max 15 Mo)" },
+    "ask.badType": { ar: "صيغة غير مدعومة — استخدم ملفًا صوتيًا", fr: "Format non pris en charge — fichier audio requis" },
+    "ask.errNoMode": { ar: "اختر طريقة الإرسال أولًا", fr: "Choisissez d’abord le mode d’envoi" },
+    "ask.errTitle": { ar: "اكتب عنوانًا من 5 أحرف على الأقل", fr: "Titre d’au moins 5 caractères requis" },
+    "ask.errText": { ar: "اكتب نص السؤال (10 أحرف على الأقل)", fr: "Texte de la question requis (10 caractères min.)" },
+    "ask.errNoRec": { ar: "سجّل صوتك أو ارفع ملفًا صوتيًا", fr: "Enregistrez ou importez un fichier audio" },
+    "ask.errContact": { ar: "وسيلة التواصل غير صحيحة (بريد صحيح أو رقم)", fr: "Contact invalide (e-mail ou numéro valides)" },
+    "ask.errSend": { ar: "لم يتم الإرسال: ", fr: "Échec de l’envoi : " },
+    "ask.okTitle": { ar: "تم استلام سؤالك بنجاح ✓", fr: "Question bien reçue ✓" },
+    "ask.okText": { ar: "راجعه فضيلة الشيخ إن شاء الله. إن اخترت الإجابة العامة فستظهر في «أسئلة وأجوبة» بعد الإجابة والاعتماد، وإن كانت خاصة فستصل وسائل التواصل المذكورة.", fr: "Le cheikh la lira, si Dieu le voulez. Réponse publique : affichée dans « Questions & réponses » ; réponse privée : envoyée via votre contact." },
+    "ask.okTrack": { ar: "رمز متابعة سؤالك (احفظه):", fr: "Code de suivi (à conserver) :" },
+    "ask.copy": { ar: "نسخ", fr: "Copier" },
+    "ask.okSee": { ar: "الأسئلة المجاب عنها ↓", fr: "Réponses publiées ↓" },
+    "ask.trackT": { ar: "متابعة سؤالك برمز التتبع", fr: "Suivre votre question par code" },
+    "ask.trackBtn": { ar: "تتبع", fr: "Suivre" },
+    "ask.trackNone": { ar: "لا يوجد سؤال بهذا الرمز", fr: "Aucune question pour ce code" },
+    "ask.st.new": { ar: "جديد — بانتظار المراجعة", fr: "Nouvelle — en attente" },
+    "ask.st.review": { ar: "قيد المراجعة", fr: "En cours d’examen" },
+    "ask.st.answered": { ar: "تمت الإجابة", fr: "Répondue" },
+    "ask.st.deferred": { ar: "مؤجل", fr: "Reportée" },
+    "ask.answersTitle": { ar: "أسئلة وأجوبة", fr: "Questions et réponses" },
+    "ask.answersNote": { ar: "لا تُعرض إلا الأسئلة التي اعتمدها الشيخ ونشر إجابتها عمومًا.", fr: "Seules les questions validées par le cheikh et publiées sont affichées." },
+    "ask.searchP": { ar: "ابحث في الأسئلة والأجوبة…", fr: "Rechercher…" },
+    "ask.allCats": { ar: "كل التصنيفات", fr: "Toutes les catégories" },
+    "ask.noAnswers": { ar: "لا توجد إجابات منشورة بعد.", fr: "Aucune réponse publiée pour l’instant." },
+    "ask.sheikhAnswered": { ar: "إجابة فضيلة الشيخ أبي أنس محمد مصطفى صار", fr: "Réponse du cheikh Abû Anas Muhammad Mustafâ Sâr" },
+    "ask.pdf": { ar: "افتح الملف", fr: "Ouvrir le fichier" },
+    "ask.share": { ar: "مشاركة", fr: "Partager" },
+    "ask.copied": { ar: "نُسخ ✓", fr: "Copié ✓" },
+    "ask.offlineNote": { ar: "⚠️ استقبال الأسئلة الجديدة يعمل فقط عند اتصال الخادم المباشر (التطبيق المحلي). هذه النسخة تعرض الإجابات المنشورة فقط.", fr: "⚠️ La réception de nouvelles questions fonctionne uniquement avec le serveur actif. Cette version affiche les réponses publiées uniquement." },
   };
 
   function t(key) {
@@ -208,7 +277,7 @@ const I18N = (function () {
     document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.getAttribute("data-i18n")); });
     document.querySelectorAll("[data-i18n-ph]").forEach(el => { el.placeholder = t(el.getAttribute("data-i18n-ph")); });
     document.querySelectorAll("[data-i18n-title]").forEach(el => { el.title = t(el.getAttribute("data-i18n-title")); });
-    const map = { "index.html": "nav.home", "lessons.html": "nav.lessons", "series.html": "nav.series", "books.html": "nav.books", "admin.html": "nav.admin" };
+    const map = { "index.html": "nav.home", "lessons.html": "nav.lessons", "series.html": "nav.series", "books.html": "nav.books", "ask.html": "nav.ask", "admin.html": "nav.admin" };
     document.querySelectorAll("#main-nav a").forEach(a => {
       const href = (a.getAttribute("href") || "").split("?")[0];
       const key = map[href];
@@ -260,3 +329,5 @@ const I18N = (function () {
 
 function t(k) { return I18N.t(k); }
 function tf(k, n) { return I18N.tf(k, n); }
+
+

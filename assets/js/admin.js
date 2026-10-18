@@ -1,6 +1,7 @@
 /* لوحة التحكم: تعمل مع الخادم (server.py)، ومع وضع محلي احتياطي */
 (function(){
   const $ = id => document.getElementById(id);
+  const esc = s => String(s||'').replace(/[&<>\"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let MODE = "local", SERIES = [], LESSONS = [], CATS = [], SETTINGS = null;
 
   const tabs = document.querySelectorAll(".tabs button");
@@ -281,13 +282,13 @@
     if (!ok) {
       // وضع محلي: دخول تجريبي
       Store.setToken("local-admin");
-      $("login").style.display="none"; $("dash").style.display=""; $("logout").style.display="";
+      $("login").style.display="none"; $("dash").style.display=""; $("logout").style.display=""; loadQuestions(); refreshQaBadge();
       loadLocal(); return;
     }
     try {
       const r = await Store.api("/api/login", { method:"POST", body: JSON.stringify({ username:$("u").value, password:$("p").value }) });
       Store.setToken(r.token);
-      $("login").style.display="none"; $("dash").style.display=""; $("logout").style.display="";
+      $("login").style.display="none"; $("dash").style.display=""; $("logout").style.display=""; loadQuestions(); refreshQaBadge();
       await loadServer();
     } catch(err){ $("login-err").innerHTML = '<div class="error">'+Store.esc(err.message)+'</div>'; }
   });
@@ -403,9 +404,147 @@
     catch(err){ alert(err.message); }
   });
 
+  /* ================= إدارة الأسئلة (اسأل الشيخ) ================= */
+  let QUESTIONS = [];
+  const QA_ST_LBL = { new: "جديد", review: "قيد المراجعة", answered: "تمت الإجابة", deferred: "مؤجل" };
+  function qaBadge(n){
+    const b = $("qa-badge");
+    if (!b) return;
+    b.style.display = n > 0 ? "" : "none";
+    b.textContent = n;
+  }
+  async function loadQuestions(){
+    if (MODE !== "server") return;
+    let r;
+    try {
+      const u = new URLSearchParams();
+      if ($("qa-f-status").value) u.set("status", $("qa-f-status").value);
+      if ($("qa-f-cat").value) u.set("cat", $("qa-f-cat").value);
+      if (($("qa-f-q").value || "").trim()) u.set("q", $("qa-f-q").value.trim());
+      r = await Store.api("/api/admin/questions?" + u.toString());
+    } catch (e) {
+      $("qa-list").innerHTML = '<div class="error">' + e.message + '</div>';
+      return;
+    }
+    QUESTIONS = r.items || [];
+    qaBadge(QUESTIONS.filter(x => x.status === "new").length);
+    drawQuestions();
+  }
+  function drawQuestions(){
+    const box = $("qa-list");
+      if (!QUESTIONS.length) { box.innerHTML = '<div class="empty-state"><span class="ic">📭</span>لا توجد أسئلة بهذه الفلاتر.</div>'; return; }
+    const catMap = { عقيدة: "عقيدة", عبادات: "عبادات", معاملات: "معاملات", أسرة: "أسرة", أخلاق: "أخلاق", أخرى: "أخرى" };
+    box.innerHTML = QUESTIONS.map(q =>
+      '<div class="admin-q-card" data-qid="' + q.id + '">'
+      + '<div class="qh"><div><b>' + esc(q.title) + '</b> '
+      + '<span class="qa-badge">' + (q.category || "—") + '</span> '
+      + (q.want_public ? '' : '<span class="mini-badge">إجابة خاصة مطلوبة</span>')
+      + (q.published ? '<span class="ok-mini" style="padding:2px 8px">منشور ✓</span>' : '')
+      + '</div>'
+      + '<div class="row" style="gap:6px">'
+      + '<select class="st-select" data-st="' + q.id + '">' + ["new","review","answered","deferred"].map(s => '<option value="'+s+'"'+(q.status===s?' selected':'')+'>'+QA_ST_LBL[s]+'</option>').join("") + '</select>'
+      + '<button class="btn small" data-open="' + q.id + '">✍️ الإجابة</button>'
+      + (q.audio ? '<button class="btn small ghost" data-listen="' + q.id + '">🎧 استماع</button>' : '')
+      + '<button class="btn small danger" data-delq="' + q.id + '">حذف</button>'
+      + '</div></div>'
+      + '<div class="qb qa-dyn" style="display:none"></div>'
+      + '<div style="color:var(--muted);font-size:12px;margin-top:6px">'
+      + 'الرمز: <code dir="ltr">' + (q.track||"") + '</code> · '
+      + 'الاسم: ' + esc(q.name || "— (زائر مجهول)") + ' · '
+      + 'التواصل: ' + esc(q.contact || "—") + ' · '
+      + (q.created || "") + '</div>'
+      + '</div>'
+    ).join("");
+    bindQa();
+  }
+  function bindQa(){
+    document.querySelectorAll("[data-st]").forEach(sel => sel.onchange = async () => {
+      const id = sel.dataset.st, q = QUESTIONS.find(x=>x.id===id);
+      try { await Store.api("/api/admin/questions/" + id, { method: "PUT", body: JSON.stringify({ status: sel.value }) }); q.status = sel.value; }
+      catch (e) { alert(e.message); loadQuestions(); }
+    });
+    document.querySelectorAll("[data-open]").forEach(b => b.onclick = () => openQaDlg(b.dataset.open));
+    document.querySelectorAll("[data-delq]").forEach(b => b.onclick = async () => {
+      if (!confirm("حذف السؤال نهائيًا (مع تسجيله الصوتي)؟")) return;
+      try { await Store.api("/api/admin/questions/" + b.dataset.delq, { method: "DELETE" }); loadQuestions(); }
+      catch (e) { alert(e.message); loadQuestions(); }
+    });
+    document.querySelectorAll("[data-listen]").forEach(b => b.onclick = () => {
+      const card = b.closest(".admin-q-card");
+      const dyn = card.querySelector(".qa-dyn");
+      const q = QUESTIONS.find(x => x.id === b.dataset.listen);
+      dyn.innerHTML = '<audio controls style="width:100%" src="' + q.audio + '"></audio>';
+      dyn.style.display = "";
+    });
+  }
+  let QA_CUR = null, QA_UPLOADED = null;
+  function openQaDlg(id){
+    QA_CUR = QUESTIONS.find(x => x.id === id); if (!QA_CUR) return;
+    QA_UPLOADED = null;
+    $("qa-dlg-title").textContent = QA_CUR.title;
+    $("qa-dlg-q").textContent = QA_CUR.qkind === "audio" ? "🎙️ سؤال صوتي + " + (QA_CUR.text || "(بلا نص)") : (QA_CUR.text || "");
+    $("qa-dlg-meta").textContent = [(QA_CUR.name || "زائر مجهول"), (QA_CUR.contact ? "تواصل: " + QA_CUR.contact : "بلا تواصل"), "رمز: " + QA_CUR.track].join(" · ");
+    const au = $("qa-dlg-audio");
+    if (QA_CUR.audio) { au.src = QA_CUR.audio; au.style.display = ""; } else { au.removeAttribute("src"); au.style.display = "none"; }
+    $("qa-dlg-answer").value = QA_CUR.answer || "";
+    $("qa-dlg-file").value = ""; $("qa-dlg-up").textContent = "";
+    $("qa-dlg-pub").checked = !!QA_CUR.published;
+    $("qa-dlg-private-note").style.display = QA_CUR.want_public ? "none" : "";
+    $("qa-dlg-msg").innerHTML = "";
+    document.getElementById("qa-ans-dlg").showModal();
+  }
+  $("qa-dlg-file").addEventListener("change", async () => {
+    const f = $("qa-dlg-file").files[0]; if (!f) return;
+    $("qa-dlg-up").textContent = "⏳ جارٍ الرفع…";
+    try {
+      const fd = new FormData();
+      fd.append("file", f);
+      fd.append("kind", /^audio\//.test(f.type||"") || /\.(mp3|m4a|wav|ogg|opus|webm)$/i.test(f.name) ? "audio" : "doc");
+      const token = localStorage.getItem("ablib_token");
+      const r = await fetch("/api/admin/upload", { method: "POST", body: fd, headers: { Authorization: "Bearer " + token } });
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.error || "فشل الرفع");
+      QA_UPLOADED = j.url;
+      $("qa-dlg-up").textContent = "✓ تم الرفع: " + j.url;
+    } catch (e) { $("qa-dlg-up").innerHTML = '<div class="error">' + e.message + '</div>'; }
+  });
+  $("qa-dlg-save").onclick = async () => {
+    if (!QA_CUR) return;
+    const body = {
+      answer: $("qa-dlg-answer").value,
+      published: $("qa-dlg-pub").checked && ($("qa-dlg-answer").value.trim() || QA_UPLOADED || QA_CUR.answer_audio || QA_CUR.answer_file) ? 1 : 0
+    };
+    if (QA_UPLOADED && $("qa-dlg-file").files[0]) {
+      const isAudio = /^audio\//.test($("qa-dlg-file").files[0].type || "") || /\.(mp3|m4a|wav|ogg|opus|webm|aac|3gp)$/i.test($("qa-dlg-file").files[0].name);
+      if (isAudio) body.answer_audio = QA_UPLOADED; else body.answer_file = QA_UPLOADED;
+    }
+    body.status = body.published ? "answered" : QA_CUR.status;
+    try {
+      const r = await Store.api("/api/admin/questions/" + QA_CUR.id, { method: "PUT", body: JSON.stringify(body) });
+      Object.assign(QA_CUR, { status: r.item.status, answer: body.answer, published: r.item.published, answer_audio: r.item.answer_audio, answer_file: r.item.answer_file });
+      $("qa-dlg-msg").innerHTML = '<div class="ok-mini">✓ حُفظ.</div>';
+      document.getElementById("qa-ans-dlg").close();
+      drawQuestions();
+    } catch (e) { $("qa-dlg-msg").innerHTML = '<div class="error">' + e.message + '</div>'; }
+  };
+  ["qa-f-status","qa-f-cat"].forEach(id => { $(id).onchange = loadQuestions; });
+  $("qa-f-q").oninput = () => { clearTimeout(window.__qaT); window.__qaT = setTimeout(loadQuestions, 300); };
+  // إشعار اللوحة بعدّاد الأسئلة الجديدة (تحدث دوريًّا بحواف رميدة)
+  let qaShown = -1;
+  async function refreshQaBadge(){
+    if (MODE !== "server" || Store.getToken() === null) { qaBadge(0); return; }
+    try {
+      const st = await Store.api("/api/admin/stats");
+      if (st.questions_new !== qaShown) { qaShown = st.questions_new; qaBadge(st.questions_new); }
+    } catch (e) {}
+  }
+  setInterval(refreshQaBadge, 45000);
+  tabs.forEach(b => { if (b.dataset.t === "questions") { const old = b.onclick; b.onclick = () => { if (old) old(b); loadQuestions(); }; } });
+  window.__qaAfterLogin = loadQuestions;
+
   // بدء
   (async () => {
     await refresh();
-    if (Store.getToken()) { $("login").style.display="none"; $("dash").style.display=""; $("logout").style.display=""; if(MODE==="server") await loadServer(); else loadLocal(); }
+    if (Store.getToken()) { $("login").style.display="none"; $("dash").style.display=""; $("logout").style.display=""; if(MODE==="server") await loadServer(); else loadLocal(); loadQuestions(); refreshQaBadge(); }
   })();
 })();
