@@ -585,4 +585,142 @@
     await refresh();
     if (Store.getToken()) { $("login").style.display="none"; $("dash").style.display=""; $("logout").style.display=""; if(MODE==="server") await loadServer(); else loadLocal(); loadQuestions(); refreshQaBadge(); }
   })();
+
+  /* ================= استيراد دروس Telegram ================= */
+  function tgState(b, c, s){ /* مساعدة اختصار */ }
+  function tgNote(msg, bad){
+    $("tg-cfg-note").innerHTML = '<span style="color:'+(bad?'#b3312d':'var(--ok,#1a7f37)')+'">'+Store.esc(msg)+'</span>';
+  }
+  function tgSLine(msg, bad){
+    $("tg-state-line").innerHTML = '<span style="color:'+(bad?'#b3312d':'')+'">'+Store.esc(msg)+'</span>';
+  }
+  function fmtState(st, src){
+    const parts=[];
+    parts.push(src.logged_in ? "جلسة الدخول: ✓ مرخّصة" : "جلسة الدخول: ✗ لم تُسعَر");
+    if(src.channel) parts.push("القناة: "+Store.esc(src.channel));
+    if(st.progress) parts.push(Store.esc(st.progress));
+    const c = st.counts||{};
+    const bits=[];
+    if(c.imported!=null) bits.push("استيراد "+c.imported);
+    if(c.skipped!=null) bits.push("مُكرر تجاوز "+c.skipped);
+    if(c.review!=null) bits.push("مراجعة "+c.review);
+    if(c.series_new) bits.push("سلاسل جديدة "+c.series_new);
+    if(bits.length&&st.busy) parts.push("("+bits.join(" • ")+")");
+    return parts.join(" — ");
+  }
+  async function tgRefresh(){
+    try{
+      const d = await Store.api("/api/admin/tg/status");
+      const src=d.src, st=d.state;
+      $("tg-api-id").value = src.api_id||"";
+      $("tg-api-hash").value = src.api_id ? "•••••• (محفوظ)" : "";
+      $("tg-phone").value = src.phone||"";
+      $("tg-channel").value = src.channel||"";
+      $("tg-auto").checked = !!src.auto_sync;
+      $("tg-autopub").checked = !!src.auto_publish;
+      $("tg-interval").value = String(src.interval_min||30);
+      if($("tg-api-hash").value.startsWith("••••")) $("tg-api-hash").dataset.saved="1";
+      $("tg-summary").innerHTML =
+        "<span class='badge'>دروس من Telegram: "+(d.counts.fromTelegram||0)+"</span>"+
+        "<span class='badge'>تحتاج مراجعة: "+(d.counts.review||0)+"</span>"+
+        "<span class='badge'>نُشر: "+(d.counts.published||0)+"</span>"+
+        "<span class='badge'>"+(src.logged_in?"الجلسة ✓":"الجلسة ✗")+"</span>"+(st.last_sync?"<span class='badge'>آخر مزامنة: "+Store.esc(st.last_sync)+"</span>":"");
+      tgSLine(fmtState(st, src), false);
+      $("tg-rev-badge").style.display=(d.counts.review? "":"none"); $("tg-rev-badge").textContent=d.counts.review||0;
+      await tgReview();
+    }catch(e){ tgSLine("تعذّر جلب الحالة: "+e.message, true); }
+  }
+  async function tgReview(){
+    try{
+      const d = await Store.api("/api/admin/tg/series");
+      const rev = d.review||[];
+      $("tg-rev-tb").innerHTML = rev.length ? rev.map(r=>
+        "<tr data-rid='"+r.id+"'>"
+        + "<td><b>"+Store.esc(r.title)+"</b><br><small style='color:var(--muted)'>"+Store.esc((r.description||r.date||"").slice(0,70))+"</small></td>"
+        + "<td><select style='max-width:170px' data-cell='series'><option value='"+(r.series_id||"")+"'>— بدون —</option>"
+        + d.series.map(s=>"<option value='"+s.id+"'"+(r.series_id===s.id?" selected":"")+">"+Store.esc(s.title)+"</option>").join("")+"</select></td>"
+        + "<td><input style='max-width:70px' value='"+(r.number!=null?r.number:"")+"' data-cell='number'></td>"
+        + "<td>"+Store.esc(KIND_LABEL[r.kind]||r.kind||"")+"</td>"
+        + "<td><button class='btn small' data-approve='"+r.id+"'>اعتماد ونشر</button> <button class='btn small ghost' data-prev='"+r.id+"'>معاينة</button></td>"
+        + "</tr>").join("")
+      : "<tr><td colspan='5' style='color:var(--muted)'>لا شيء حاليًا ✓</td></tr>";
+      document.querySelectorAll("[data-approve]").forEach(b=>b.onclick=async()=>{
+        const tr=b.closest("tr");
+        const series=tr.querySelector("[data-cell=series]").value;
+        const numberV=tr.querySelector("[data-cell=number]").value;
+        const title=tr.querySelector("b").textContent.trim();
+        try{
+          const r2=await Store.api("/api/admin/tg/lesson/"+b.dataset.approve,{method:"POST",body:JSON.stringify({title:title,series_id:series||null,number:numberV||null,publish:1})});
+          alert("نُشر الدرس ✓ أُرسل أمر النشر إلى الموقع تلقائيًا.");     tgRefresh(); refresh(); loadServer();
+        }catch(e){ alert("فشل الاعتماد: "+e.message); }
+      });
+      document.querySelectorAll("#tg-rev-tb [data-prev]").forEach(b=>b.onclick=()=>window.open("lesson.html?id="+encodeURIComponent(b.dataset.prev)+"&preview=1","_blank"));
+    }catch(e){ console.warn("rev", e); }
+  }
+  async function tgLog(){
+    try{
+      const d=await Store.api("/api/admin/tg/log");
+      $("tg-log").textContent=(d.log||[]).map(l=>"["+l.t+"] "+l.msg+(l.msg_id?(" (رسالة "+l.msg_id+")"):"")).join("\n")||"السجل فارغ.";
+      $("tg-log").scrollTop=999999;
+    }catch(e){ $("tg-log").textContent="تعذّر تحميل السجل: "+e.message; }
+  }
+  $("tg-refresh") && ($("tg-refresh").onclick = tgRefresh);
+  $("tg-save-cfg") && ($("tg-save-cfg").onclick = async()=>{
+    const body={channel:$("tg-channel").value.trim(),phone:$("tg-phone").value.trim(),auto_sync:$("tg-auto").checked,interval_min:$("tg-interval").value,auto_publish:$("tg-autopub").checked};
+    if(/^\d+$/.test($("tg-api-id").value.trim())) body.api_id=$("tg-api-id").value.trim();
+    const hv=$("tg-api-hash").value.trim();
+    if(hv && !hv.startsWith("••••")) body.api_hash=hv;
+    try{
+      await Store.api("/api/admin/tg/config",{method:"POST",body:JSON.stringify(body)});
+      tgNote("حُفظ التكوين ✓ (أسرارك لا تُنشر أبدًا، تبقى في جهازك)", false); tgRefresh();
+    }catch(e){ tgNote("فشل الحفظ: "+e.message, true); }
+  });
+  $("tg-login-request") && ($("tg-login-request").onclick=async()=>{
+    const id=$("tg-api-id").value.trim(),h=$("tg-api-hash").value.trim(),p=$("tg-phone").value.trim();
+    if(!id||!h||!p){ tgNote("أدخل api_id وapi_hash ورقم الهاتف أولًا", true); return; }
+    try{
+      const r=await Store.api("/api/admin/tg/login",{method:"POST",body:JSON.stringify({stage:"code",api_id:id,api_hash:h,phone:p})});
+      $("tg-code-row").style.display=""; $("tg-login-key").value=r.key;
+      tgNote(r.msg+" — تحقق من حساب التلغرام", false);
+    }catch(e){ tgNote("فشل طلب الكود: "+e.message, true); }
+  });
+  $("tg-login-verify") && ($("tg-login-verify").onclick=async()=>{
+    try{
+      const r=await Store.api("/api/admin/tg/login",{method:"POST",body:JSON.stringify({stage:"verify",key:$("tg-login-key").value,code:$("tg-code").value.trim(),password:$("tg-pass").value})});
+      if(r.ok){ $("tg-code-row").style.display="none"; tgNote("دُخِل وسُعِّرت الجلسة ✓ الآن: احفظ رابط القناة ثم استورد", false); tgRefresh(); }
+    }catch(e){ tgNote("فشل التأكيد: "+e.message, true); }
+  });
+  $("tg-test") && ($("tg-test").onclick=async()=>{
+    tgSLine("يختبر الاتصال…", false);
+    try{ const r=await Store.api("/api/admin/tg/test",{method:"POST",body:"{}"});
+      if(r.ok){ tgSLine("الاتصال ناجح ✓ القناة: «"+r.title+"» "+r.channel, false); }
+      else tgSLine("فشل: "+r.error, true);
+    }catch(e){ tgSLine("فشل: "+e.message, true); }
+  });
+  $("tg-import") && ($("tg-import").onclick=async()=>{
+    if(!confirm("سيُستورد كل تاريخ القناة إلى المكتبة. غير المؤكد سيذهب إلى «مراجعة». متابعة؟")) return;
+    try{ const r=await Store.api("/api/admin/tg/import",{method:"POST",body:JSON.stringify({limit:0})});
+      tgSLine(r.msg||"بدأ الاستيراد…", false); alert(r.msg); tgLog();
+    }catch(e){ tgSLine("فشل الأمر: "+e.message, true); }
+  });
+  $("tg-sync") && ($("tg-sync").onclick=async()=>{
+    try{ const r=await Store.api("/api/admin/tg/sync",{method:"POST",body:"{}"});
+      tgSLine(r.msg||"بدأت المزامنة…", false); alert(r.msg); tgLog();
+    }catch(e){ tgSLine("فشل الأمر: "+e.message, true); }
+  });
+  ["tg-auto","tg-autopub","tg-interval"].forEach(id=>{
+    const el=$(id); if(!el) return;
+    el.onchange=async()=>{
+      try{
+        const body={auto_sync:$("tg-auto").checked,auto_publish:$("tg-autopub").checked,interval_min:$("tg-interval").value,channel:undefined,phone:undefined};
+        delete body.channel; delete body.phone;
+        await Store.api("/api/admin/tg/config",{method:"POST",body:JSON.stringify(body)});
+        tgSLine($("tg-auto").checked? ("فُعّلت المزامنة التلقائية (كل "+$("tg-interval").value+" دقيقة) — تعمل ما دام الخادم حيًّا") : "أُوقفت المزامنة التلقائية", false);
+        tgRefresh();
+      }catch(e){ tgSLine("فشل التبديل: "+e.message, true); }
+    };
+  });
+  $("tg-log-refresh") && ($("tg-log-refresh").onclick=tgLog);
+  // عند فتح تاب الاستيراد: حمّل الحالة والسجل
+  document.querySelector(".tabs [data-t=tgimport]") && (document.querySelector(".tabs [data-t=tgimport]").addEventListener("click", ()=>{ tgRefresh(); tgLog(); }));
 })();
